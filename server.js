@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors'); // Import the cors package
 const app = express();
 const port = process.env.PORT || 3009;
-const apiUrl = process.env.API_URL || "htgtps://www.makalius.lt/google-ads-feed/?type=facebookAdAll";
+const apiUrl = process.env.API_URL || "https://www.makalius.lt/google-ads-feed/?type=facebookAdAll";
 
 const axios = require('axios');
 const xml2js = require('xml2js');
@@ -44,6 +44,15 @@ const extractItems = (result) => {
     google_product_category: item['g:google_product_category']
   }));
 };
+
+app.get('/', (req, res) => {
+  res.send('API is running!');
+});
+
+console.log(`Using API_URL: ${apiUrl}`);
+console.log(`Server will run on PORT: ${port}`);
+
+
 
 // Route for fetching all deals
 app.get('/allDeals', async (req, res) => {
