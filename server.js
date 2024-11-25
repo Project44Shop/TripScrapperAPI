@@ -1,8 +1,14 @@
 const express = require('express');
+const cors = require('cors'); // Import the cors package
 const app = express();
-const port = 3008;
+const port = process.env.PORT || 3009;
+const apiUrl = process.env.API_URL || "htgtps://www.makalius.lt/google-ads-feed/?type=facebookAdAll";
+
 const axios = require('axios');
 const xml2js = require('xml2js');
+
+// Enable CORS for all routes
+app.use(cors());
 
 const fetchAndParseXML = async (url) => {
   try {
@@ -42,7 +48,7 @@ const extractItems = (result) => {
 // Route for fetching all deals
 app.get('/allDeals', async (req, res) => {
   try {
-    const result = await fetchAndParseXML('https://www.makalius.lt/google-ads-feed/?type=facebookAdAll');
+    const result = await fetchAndParseXML(apiUrl);
     const items = extractItems(result);
     res.json(items);
   } catch (error) {
@@ -53,7 +59,7 @@ app.get('/allDeals', async (req, res) => {
 // Route for fetching "poilsinės" deals
 app.get('/poilsines', async (req, res) => {
   try {
-    const result = await fetchAndParseXML('https://www.makalius.lt/google-ads-feed/?type=facebookAdAll');
+    const result = await fetchAndParseXML(apiUrl);
     const items = extractItems(result);
     
     // Filter items with productType 'poilsinės'
@@ -65,6 +71,12 @@ app.get('/poilsines', async (req, res) => {
     res.status(500).send('Error fetching or processing data');
   }
 });
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something went wrong!');
+});
+
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
